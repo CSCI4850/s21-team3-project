@@ -25,8 +25,8 @@ from tensorflow.python.platform import gfile
 from tensorflow.python.util import compat
 
 import tensorflow.compat.v1.keras.backend as K
-import tensorflow as tf
 tf.compat.v1.disable_eager_execution()
+from tensorflow.lite.experimental.microfrontend.python.ops import audio_microfrontend_op as frontend_op
 
 
 def load_wav_file(filename, sess, sample_rate=16000):
@@ -97,7 +97,7 @@ def get_spectrogram(filename, window_size_samples, window_stride_samples, sess):
     return spectrogram
 
 
-def get_mfcc(filename, input_width, window_size_samples, window_stride_samples, sess, sample_rate=16000):
+def get_mfcc(filename,sess,input_width=40, window_size_samples=480, window_stride_samples=320.0, sample_rate=16000):
     """Saves audio sample data to a .wav audio file.
 
     Args:
@@ -106,13 +106,7 @@ def get_mfcc(filename, input_width, window_size_samples, window_stride_samples, 
     Returns:
         2D Numpy array holding the MFCC data as floats.
     """
-    #       The number of buckets in each FFT row of the spectrogram is calculated
-    #       by the number of input samples in each frame. This can be very high, 
-    #       with a 160 sample window, for example, yielding 127 buckets. 
-    #       We don't need this amount of information for classification, 
-    #       so we often try to minimize it to achieve a smaller outcome. 
-    #       That is what the MFCC algorithm does.
-    spectrogram = get_spectrogram(filename, window_size_samples, window_stride_samples, sess)
+    spectrogram = get_spectrogram(filename, sess, window_size_samples, window_stride_samples)
     spectrogram_placeholder = tf.compat.v1.placeholder(tf.float32, [None]+list(spectrogram.shape)[1:])
     mfcc = audio_ops.mfcc(
             spectrogram,
@@ -128,6 +122,38 @@ def get_mfcc(filename, input_width, window_size_samples, window_stride_samples, 
     return mfcc
 
 
+def run_Micro_process(filename,sess,input_width=40, window_size_samples=480, window_stride_samples=320, sample_rate=16000):
+    wav_filename_placeholder = tf.compat.v1.placeholder(tf.string, [], name="wav_name")
+    wav_loader = io_ops.read_file(wav_filename_placeholder, name="reader_reader")
+    wav_decoder = tf.audio.decode_wav(wav_loader, 
+                                    desired_channels=1, 
+                                    desired_samples=sample_rate,
+                                    name="wav_decoder")
+    
+    window_size = (window_size_samples *1000) / sample_rate
+    window_step = (window_stride_samples*1000) / sample_rate
+   
+    int16_input = tf.cast(tf.multiply(wav_decoder.audio, 32768), tf.int16)
+    micro_frontend = frontend_op.audio_microfrontend(
+        int16_input,
+        sample_rate=sample_rate,
+        window_size=window_size,
+        window_step=window_step,
+        num_channels=input_width,
+        out_scale=1,
+        out_type=tf.float32)
+    mfcc = tf.multiply(micro_frontend, (10.0 / 256.0))
+    tf.compat.v1.summary.image(
+        'micro',
+        tf.expand_dims(tf.expand_dims(mfcc, -1), 0),
+        max_outputs=1)
+    
+    return sess.run(
+            mfcc,
+            feed_dict={
+                wav_filename_placeholder:filename}).flatten()
+
+
 
 def get_label(file_path):
     """ Return the Label on each file path using the Parent's Directory Name
@@ -137,7 +163,7 @@ def get_label(file_path):
 
 
 
-def run_mfcc(filename, input_width, window_size_samples, window_stride_samples, sess, sample_rate=16000):
+def run_mfcc(input_width=40, window_size_samples=480, window_stride_samples=320.0, sample_rate=16000):
         """ Run MFCC on a .wav file
         
         Args:
@@ -161,8 +187,33 @@ def run_mfcc(filename, input_width, window_size_samples, window_stride_samples, 
                 spectrogram,
                 wav_decoder.sample_rate,
                 dct_coefficient_count= input_width)
-        return sess.run(
-                mfcc,
-                feed_dict={
-                    wav_filename_placeholder: filename}).flatten()
+        
+        return mfcc, wav_filename_placeholder
     
+    
+def Micro_process(sample_rate=16000, window_size=480, window_stride=320, input_width=40):
+    wav_filename_placeholder = tf.compat.v1.placeholder(tf.string, [], name="wav_name")
+    wav_loader = io_ops.read_file(wav_filename_placeholder, name="reader_reader")
+    wav_decoder = tf.audio.decode_wav(wav_loader, 
+                                    desired_channels=1, 
+                                    desired_samples=sample_rate,
+                                    name="wav_decoder")
+        #background_clamp = tf.clip_by_value(wav_decoder.audio, -1.0, 1.0)
+    
+    window_size = (window_size *1000) / sample_rate
+    window_step = (window_stride*1000) / sample_rate
+
+    int16_input = tf.cast(tf.multiply(wav_decoder.audio, 32768), tf.int16)
+    micro_frontend = frontend_op.audio_microfrontend(
+        int16_input,
+        sample_rate=sample_rate,
+        window_size=window_size,
+        window_step=window_step,
+        num_channels=input_width,
+        out_scale=1,
+        out_type=tf.float32)
+    mfcc = tf.multiply(micro_frontend, (10.0 / 256.0))
+
+    return mfcc, wav_filename_placeholder
+    
+
