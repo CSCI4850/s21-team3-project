@@ -104,7 +104,7 @@ void RespondToCommand(tflite::ErrorReporter* error_reporter,
         
          if (found_command[0] == 'l') {
           last_command_time = current_time;
-          digitalWrite(4, LOW);  // Turn on  light
+          digitalWrite(4, LOW);  // Turn off  light
           digitalWrite(LEDR, HIGH);
           ready_ = 0;
 
@@ -112,7 +112,7 @@ void RespondToCommand(tflite::ErrorReporter* error_reporter,
 
          else if (found_command[0] == 'f') {
           last_command_time = current_time;
-          digitalWrite(5, LOW);  // Turn on  fan
+          digitalWrite(5, LOW);  // Turn off  fan
           digitalWrite(LEDR, HIGH);
           
           ready_ = 0;
@@ -120,7 +120,7 @@ void RespondToCommand(tflite::ErrorReporter* error_reporter,
 
         else if (found_command[0] == 'h') {
           last_command_time = current_time;
-          digitalWrite(6, LOW);  // Turn on  light
+          digitalWrite(6, LOW);  // Turn off  light
           digitalWrite(LEDR, HIGH);
           ready_ = 0;
         }
@@ -140,17 +140,10 @@ void RespondToCommand(tflite::ErrorReporter* error_reporter,
       digitalWrite(LEDB, HIGH);
       ready_= 0;
     }
-    // If it is non-zero but <3 seconds ago, do nothing.
+    // If it is non-zero but <5 seconds ago, do nothing.
     return;
   }
 
-  // Otherwise, toggle the LED every time an inference is performed.
-  ++count;
-  if (count & 1) {
-    digitalWrite(LED_BUILTIN, HIGH);
-  } else {
-    digitalWrite(LED_BUILTIN, LOW);
-  }
                       }
 
 #endif  // ARDUINO_EXCLUDE_CODE
