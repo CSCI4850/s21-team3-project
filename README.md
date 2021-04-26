@@ -9,25 +9,40 @@ Read here for virtual environment :https://docs.python.org/3/library/venv.html
 But for simplicity, clone this repository by runnung the command below in the terminal line by line
 ```
 $ mkdir tiny
-$ cd recommendation
+$ cd tiny
 $ git clone git@github.com:CSCI4850/s21-team3-project.git
+$ cd s21-team3-project
 ```
 ## Intsalling Dependence
 ```
-$ pip install -r requirements.txt
+$ pip install -r requirement.txt
 ```
 
-## Collecting Data
-The data
+## Collecting data
+We used the tensorflow's speech command dataset available in [1] and recorded more data for our specific application (on, off, fan, heater and light). To record and include more data in the dataset. open the preprocessing folder and run through the preprocess notebook
 ## Preprocessing
+The preprcessing of the data is made using the Tensorflow's API MicrofrontEnd and this is done inside the model training. However, it is similar to those available in the preprocess notebook stated in the "Collecting Data" Phase.
 
-The raw data that will be used in this project are audio signals which will be represented in a high dimensional projection for better training accuracy and faster training speed as spectrogram. We will be extracting features from our data for classification in a deep Neural Network architecture.
 ## Model Architecture and Training
+Training is of two Phase. Train Large model through the Large Model Directory.
+Follow the Training.ipynb notebook to train an arduino deployable model (This is the Model to reproduce the Result in this research)
 
-The architecture of the Model Layers will be built on Conv2D, and MaxPool Operations from TensorFlow and SoftMax activation on the output Layer for classification of each input data. This will be possible because we will be preprocessing our input data into an image of spectrogram.
-## Model Evaluation
+# Model Deployment
+# Hardware Requirement
+1. Arduino NANO BLE 33
+2. Arduino IDE for arduino programming. 
+3. Three LED LIGHTS (For Fan, Light and Heater)
+4. Bread Board for connections
 
-We will train and test our Model using the preprocessed Dataset and test for an acceptable degree of precision. Performance measures for machine learning models are application-dependent. For this application, we will be testing out model based on accuracy and the inference time. These performance measures were chosen because the main functionality of our model is to recognize speech input and then quickly perform an action that will satisfy the user's need.
 ## Model Deployment
-
-We will be deploying our Model into an Arduino NANO BOARD. However, embedded devices only have a very low storage memory (Usually a tens of Kilobytes), Low RAM and mostly have no operating systems. The microcontroller that will be used in this project however has an mbedOS which requires programming in C++. We will be using the TensorFlow Lite Micro to deploy our model onto an Arduino NANO micro controller and will be required to perform Quantization in order to accommodate for low memory constraint on the Microcontroller. Quantization in machine learning, means converting the model weights and Bias from a float point values to int values without influencing the accuracy of the model.
+1. Set up Arduino IDE  for NANO BLE 33 using https://www.arduino.cc/en/Guide/NANO33BLE
+2. open arduino source code in the Arduino BLE
+4. Wire up the Bread Board with the Led Lights
+  ### PIN MODES
+    * Pin 4 for Light
+    * Pin 5 for Fan
+    * Pin 6 for Heater
+ 5. Upload skecthes into Arduino Device
+ 
+ ### Testing
+ The Device comes with an embedded Microphone so we do not have to install microphone externally. After Successfully deploying model. Speak ON or OFF and either a green light(on) or a red light(off) will come up on the arduino to indicate device raeady to perform the action. WE can then speak the appliance LIGHT, FAN or HEATER and see how the device performs its action. The lights will come up as configured in the Model deployment phase
