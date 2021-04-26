@@ -2,7 +2,7 @@ numpy
 matplotlib==3.*
 seaborn
 pandas
-tensorflow==2.4.*
+tensorflow==1.*
 six
 hashlib
 tarfile
