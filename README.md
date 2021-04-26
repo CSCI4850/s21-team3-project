@@ -1,10 +1,24 @@
 
-# Project Proposal
+# Project Description
 
-Many voice recognition software begins with keyword detection. For example, you might say "OK Google" or "Hey Siri" to wake up the corresponding recognition software on your mobile device. Once you have asked to interact, it's possible to run a model which is limited only by the resources available to the cloud provider. Most devices already send and receive audio data via the internet anyway, so it wouldn't be a bad idea to use audio interaction as a cloud-based service. However, it would be very expensive to upkeep, and introduce additional privacy risks. What if we could run this model locally on an embedded system where users are not worried about their privacy and cloud users do not necessarily have to pay a lot to upkeep their model in the cloud? We propose to build a Machine learning model as a typical smart home device that understands and performs an action upon sensing its command from a microphone. These commands will include a command to turn on and turn off devices such as a point of light, a fan e.t.c. The first steps of our machine learning workflow are quite similar to those of the traditional: we collect our data, preprocess and then design and train a model using TensorFlow. The second step is to deploy our model into an embedded device. We will be using the Arduino NANO BLE which has a pre-installed microphone to collects an input into the model and perform an action. The workflow is illustrated as below:
+We have built a Machine learning model as a typical smart home device that understands and performs an action upon sensing its command from a microphone. These commands include a commands to turn on and turn off home appliances such as a point of light, fan and a heater. The first steps of our machine learning workflow are quite similar to those of the traditional: we collect our data, preprocess and then design and train a model using TensorFlow. The second step is deploy our model into an embedded device. We used the Arduino NANO BLE which has a pre-installed microphone to collects an input into the model and the TFlite-Micro for Micro-controllers to run the saved Quantize - Model is saved with int8 parameters and accept int8 input - to perform an action.
+The steps highlighted below will reproduce the workflow:
+## Clone Repository
+Open your Command Line or Terminal depending on your Operating System. You may create a virtual environment to isolate this project files from your local machine;
+Read here for virtual environment :https://docs.python.org/3/library/venv.html
+But for simplicity, clone this repository by runnung the command below in the terminal line by line
+```
+$ mkdir tiny
+$ cd recommendation
+$ git clone git@github.com:CSCI4850/s21-team3-project.git
+```
+## Intsalling Dependence
+```
+$ pip install -r requirements.txt
+```
+
 ## Collecting Data
-
-Dataset collection are often the most time consuming and challenging part of Machine Learning process. Since this project is expected to be delivered within a limited time-frame, we propose to use a publicly available dataset from fluent.ai and a dataset created by Pete Warden. We will also generate our own dataset which will be limited for this purpose.
+The data
 ## Preprocessing
 
 The raw data that will be used in this project are audio signals which will be represented in a high dimensional projection for better training accuracy and faster training speed as spectrogram. We will be extracting features from our data for classification in a deep Neural Network architecture.
