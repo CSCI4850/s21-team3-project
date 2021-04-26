@@ -36,7 +36,10 @@ Follow the Training.ipynb notebook to train an arduino deployable model (This is
 
 ## Model Deployment
 1. Set up Arduino IDE  for NANO BLE 33 using https://www.arduino.cc/en/Guide/NANO33BLE
-2. open arduino source code in the Arduino BLE
+    On the IDE, click "TOOLS" --> "MANAGE LIBRARIES", then searcha nd install the following Dependence
+    * Tensorflow Lite - Latest Version
+    * LSM9DS1
+3. open arduino source code in the Arduino BLE
 4. Wire up the Bread Board with the Led Lights
   ### PIN MODES
     * Pin 4 for Light
