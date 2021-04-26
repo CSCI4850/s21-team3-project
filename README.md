@@ -39,13 +39,13 @@ Follow the Training.ipynb notebook to train an arduino deployable model (This is
     On the IDE, click "TOOLS" --> "MANAGE LIBRARIES", then searcha nd install the following Dependence
     * Tensorflow Lite - Latest Version
     * LSM9DS1
-3. open arduino source code in the Arduino BLE
-4. Wire up the Bread Board with the Led Lights
+2. open arduino source code in the Arduino BLE
+3. Wire up the Bread Board with the Led Lights
   ### PIN MODES
     * Pin 4 for Light
     * Pin 5 for Fan
     * Pin 6 for Heater
- 5. Upload skecthes into Arduino Device
+ 4. Upload skecthes to Arduino Device
  
  ### Testing
  The Device comes with an embedded Microphone so we do not have to install microphone externally. After Successfully deploying model. Speak ON or OFF and either a green light(on) or a red light(off) will come up on the arduino to indicate device raeady to perform the action. WE can then speak the appliance LIGHT, FAN or HEATER and see how the device performs its action. The lights will come up as configured in the Model deployment phase
