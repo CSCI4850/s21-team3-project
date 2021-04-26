@@ -35,7 +35,7 @@ class Model:
         Tensorflow Sequential and Functional Model Using Graph 
         Please refer to: https://www.tensorflow.org/api_docs/python/tf/Graph for more details
     """
-    def __init__(self, commands, input_size=1960, first_conv_filter =128, second_conv_filter=64, 
+    def __init__(self, commands, input_size=1960, first_conv_filter =8,
                 model_dir="model", frequency_size = 40, time_size=49, sess=False, preprocess = "micro", training= True):
         """
             Initialization of variables and Tensor Session
@@ -43,7 +43,8 @@ class Model:
         self.check_session(sess)
         self.commands = commands
         self.commands_dic = self.create_commands(self.commands)
-        self._softmax_layer, self._dropout_placeholder = self._build(input_size, first_conv_filter, second_conv_filter, frequency_size, time_size, training)
+        print(self.commands_dic)
+        self._softmax_layer, self._dropout_placeholder = self._build(input_size, first_conv_filter, frequency_size, time_size, training)
         self._model_dir = model_dir
         self._input_size = input_size
         self._loaded = False
@@ -67,7 +68,7 @@ class Model:
 
 
         
-    def _build(self, input_size, first_conv_filter, second_conv_filter, frequency_size, time_size, training,  input_1d = False):
+    def _build(self, input_size, first_conv_filter,frequency_size, time_size, training,  input_1d = False):
 
         """
             This a private protected Method to Build the Model Layer in graph
@@ -100,7 +101,7 @@ class Model:
             first_weights = tf.compat.v1.get_variable(                          # Weights Initialization 
                 name='first_weights',
                 initializer=tf.compat.v1.truncated_normal_initializer(stddev=0.01),
-                shape=[20, 8, 1, first_conv_filter])
+                shape=[10, 8, 1, first_conv_filter])
             
         with tf.compat.v1.variable_scope("first_bias", reuse=tf.compat.v1.AUTO_REUSE):
             first_bias = tf.compat.v1.get_variable(                              # Bias Initialization 
@@ -111,7 +112,7 @@ class Model:
 
         first_conv = tf.nn.conv2d(input=input_4d,                         # First Convolution Layer
                                 filters=first_weights,                    #input: [batch_size, rows, cols, channel]
-                                strides=[1, 1, 1, 1],                    
+                                strides=[1, 2, 2, 1],                    
                                 padding='SAME') + first_bias
 
 
@@ -122,40 +123,15 @@ class Model:
         else:
             first_dropout = first_relu
 
-        max_pool = tf.nn.max_pool2d(input=first_dropout,
-                                    ksize=[1, 2, 2, 1],
-                                    strides=[1, 2, 2, 1],
-                                    padding='SAME')
-        
-        with tf.compat.v1.variable_scope("second_weights", reuse=tf.compat.v1.AUTO_REUSE):
-            second_weights = tf.compat.v1.get_variable(
-                name='second_weights',
-                initializer=tf.compat.v1.truncated_normal_initializer(stddev=0.01),
-                shape=[10, 4, first_conv_filter, second_conv_filter])
-            
-        with tf.compat.v1.variable_scope("second_bias", reuse=tf.compat.v1.AUTO_REUSE):
-            second_bias = tf.compat.v1.get_variable( name='second_bias',
-                initializer=tf.compat.v1.zeros_initializer,
-                shape=[second_conv_filter,])
 
-        second_conv = tf.nn.conv2d(input=max_pool,
-                                    filters=second_weights,
-                                    strides=[1, 1, 1, 1],
-                                    padding='SAME') + second_bias
-        second_relu = tf.nn.relu(second_conv)
-        if training:
-            second_dropout = tf.nn.dropout(second_relu, rate=dropout_rate)
-        else:
-            second_dropout = second_relu
-
-        conv_shape = second_dropout.get_shape()
+        conv_shape = first_dropout.get_shape()
         conv_output_width = conv_shape[2]
         conv_output_height = conv_shape[1]
 
         conv_element_count = int(
-            conv_output_width * conv_output_height * second_conv_filter)
+            conv_output_width * conv_output_height * first_conv_filter)
 
-        flattened_second_conv = tf.reshape(second_dropout,
+        flattened_first_conv = tf.reshape(first_dropout,
                                             [-1, conv_element_count])
         label_count = len(self.commands_dic)
         
@@ -171,7 +147,7 @@ class Model:
                 shape=[label_count])
 
 
-        softmax_layer = tf.matmul(flattened_second_conv, softmax_weights) + softmax_bias
+        softmax_layer = tf.matmul(flattened_first_conv, softmax_weights) + softmax_bias
         if training:
             return softmax_layer, dropout_rate
         return softmax_layer
@@ -350,7 +326,11 @@ class Model:
                             self.mfcc,
                             feed_dict={
                                 self.wav_filename_placeholder: file_path[i]}).flatten())
-            labels.append(self.dic_commands[get_label(file_path[i])])
+            label = get_label(file_path[i])
+            if label in self.commands:
+                labels.append(self.dic_commands[label])
+            else:
+                labels.append(self.dic_commands["unknown"])
 
         return np.stack(data), np.stack(labels)
 
@@ -408,23 +388,23 @@ class Model:
 
 
     def save_pb_model(self, file_name,  first_conv_filter=128, 
-                    second_conv_filter=64, frequency_size=40, 
-                    time_size=49, last_checkpoint = True):
+                    frequency_size=40, 
+                    time_size=49, last_checkpoint = 0):
 
         """
             Save Model For Inference
         """
-        
-        input_1d = tf.reshape(self.mfcc, [-1, self._input_size])
+        mfcc, placholder = Micro_process(integer=32767)
+        input_1d = tf.reshape(mfcc, [-1, self._input_size])
         
 
         softmax_layer = self._build(self._input_size, first_conv_filter, 
-                                    second_conv_filter, frequency_size, 
+                                   frequency_size, 
                                     time_size, training=False, input_1d= input_1d)
 
         
         output = tf.nn.softmax(softmax_layer, name='labels_softmax')
-        if last_checkpoint: # Should load from last saved checkpoint
+        if last_checkpoint == 0: # Should load from last saved checkpoint
             self.load_checkpoint()
         else:
             self.load_checkpoint(path=last_checkpoint)
@@ -434,7 +414,7 @@ class Model:
             'input': tf.compat.v1.saved_model.utils.build_tensor_info(input_1d)
         }
         info_outputs = {
-            'predictions': tf.compat.v1.saved_model.utils.build_tensor_info(output)
+            'output': tf.compat.v1.saved_model.utils.build_tensor_info(output)
         }
         signature = (
             tf.compat.v1.saved_model.signature_def_utils.build_signature_def(

@@ -1,0 +1,7 @@
+silence
+unknown
+on
+off
+fan
+heater
+light
