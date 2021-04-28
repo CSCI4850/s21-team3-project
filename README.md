@@ -41,8 +41,8 @@ Follow the Training.ipynb notebook to train an arduino deployable model (This is
     * LSM9DS1
 2. open arduino source code in the Arduino BLE
     * If you have trained up your Model for deployment, You need to locate the the tfliteMicro.cc in the Model folder
-    * Copy the content and navigate to the arduino source code named "micro_features_model.cpp". Paste the content inside the Curly Brackets "{}" ONly
-    * I you also trained up your Model with different words, you need to locate the source code name "micro_features_micro_model_settings.cpp" to change your commands appropiately 
+    * Copy the content and navigate to the arduino source code named "micro_features_model.cpp". Paste the content inside the Curly Brackets "{}" only
+    * If you also trained up your Model with different words, you need to locate the source code name "micro_features_micro_model_settings.cpp" to change your commands appropiately 
 4. Wire up the Bread Board with the Led Lights
   ### PIN MODES
     * Pin 4 for Light
