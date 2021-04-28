@@ -7,3 +7,4 @@ six
 hashlib
 tarfile
 pickle
+python==3.8.5
