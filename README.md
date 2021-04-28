@@ -1,12 +1,12 @@
 
 # Project Description
 
-We have built a Machine learning model as a typical smart home device that understands and performs an action upon sensing its command from a microphone. These commands include a commands to turn on and turn off home appliances such as a point of light, fan and a heater. The first steps of our machine learning workflow are quite similar to those of the traditional: we collect our data, preprocess and then design and train a model using TensorFlow. The second step is deploy our model into an embedded device. We used the Arduino NANO BLE which has a pre-installed microphone to collects an input into the model and the TFlite-Micro for Micro-controllers to run the saved Quantize - Model is saved with int8 parameters and accept int8 input - to perform an action.
+We have built a Machine learning model as a typical smart home device that understands and performs an action upon sensing its command from a microphone. These commands include commands to turn on and turn off home appliances such as a point of light, fan and a heater. The first step of our machine learning workflow are quite similar to those of the traditional: we collect our data, preprocess and then design and train a model using TensorFlow. The second step is to deploy our model into an embedded device. We used the Arduino NANO BLE which has a pre-installed microphone to collect an input into the model and the TFlite-Micro for Micro-controllers to run the saved Quantize Model - Model is saved with int8 parameters and accept int8 input - to perform an action.
 The steps highlighted below will reproduce the workflow:
 ## Clone Repository
 Open your Command Line or Terminal depending on your Operating System. You may create a virtual environment to isolate this project files from your local machine;
-Read here for virtual environment :https://docs.python.org/3/library/venv.html
-But for simplicity, clone this repository by runnung the command below in the terminal line by line
+Read here for virtual environment: https://docs.python.org/3/library/venv.html. 
+But for simplicity, clone this repository by runnung the command below in the terminal, line by line
 ```
 $ mkdir tiny
 $ cd tiny
@@ -40,7 +40,10 @@ Follow the Training.ipynb notebook to train an arduino deployable model (This is
     * Tensorflow Lite - Latest Version
     * LSM9DS1
 2. open arduino source code in the Arduino BLE
-3. Wire up the Bread Board with the Led Lights
+    * If you have trained up your Model for deployment, You need to locate the the tfliteMicro.cc in the Model folder
+    * Copy the content and navigate to the arduino source code named "micro_features_model.cpp". Paste the content inside the Curly Brackets "{}" ONly
+    * I you also trained up your Model with different words, you need to locate the source code name "micro_features_micro_model_settings.cpp" to change your commands appropiately 
+4. Wire up the Bread Board with the Led Lights
   ### PIN MODES
     * Pin 4 for Light
     * Pin 5 for Fan
@@ -48,4 +51,4 @@ Follow the Training.ipynb notebook to train an arduino deployable model (This is
  4. Upload skecthes to Arduino Device
  
  ### Testing
- The Device comes with an embedded Microphone so we do not have to install microphone externally. After Successfully deploying model. Speak ON or OFF and either a green light(on) or a red light(off) will come up on the arduino to indicate device raeady to perform the action. WE can then speak the appliance LIGHT, FAN or HEATER and see how the device performs its action. The lights will come up as configured in the Model deployment phase
+ The Device comes with an embedded Microphone so we do not have to install microphone externally. After Successfully deploying model, Speak ON or OFF and either a green light(on) or a red light(off) will come up on the arduino to indicate device raeady to perform the action. We can then speak the appliance LIGHT, FAN or HEATER and see how the device performs its action. The lights will come up as configured in the Model deployment phase
