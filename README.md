@@ -26,7 +26,7 @@ The preprcessing of the data is made using the Tensorflow's API MicrofrontEnd an
 ## Model Architecture and Training
 Training is of two Phase. Train Large model through the Large Model Directory.
 Follow the Training.ipynb notebook to train an arduino deployable model (This is the Model to reproduce the Result in this research)
-![Screenshot](Tiny Model.png)
+![Screenshot](Tiny_Model.png)
 
 # Model Deployment
 # Hardware Requirement
