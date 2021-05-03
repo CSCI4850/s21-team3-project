@@ -13,7 +13,7 @@ $ cd tiny
 $ git clone git@github.com:CSCI4850/s21-team3-project.git
 $ cd s21-team3-project
 ```
-## Intsalling Dependence
+## Installing Dependence
 ```
 $ pip install -r requirement.txt
 ```
@@ -37,7 +37,7 @@ Follow the Training.ipynb notebook to train an arduino deployable model (This is
 
 ## Model Deployment
 1. Set up Arduino IDE  for NANO BLE 33 using https://www.arduino.cc/en/Guide/NANO33BLE
-    On the IDE, click "TOOLS" --> "MANAGE LIBRARIES", then searcha nd install the following Dependence
+    On the IDE, click "TOOLS" --> "MANAGE LIBRARIES", then search and install the following Dependence
     * Tensorflow Lite - Latest Version
     * LSM9DS1
 2. open arduino source code in the Arduino BLE
