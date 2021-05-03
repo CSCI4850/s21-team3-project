@@ -46,9 +46,9 @@ Follow the Training.ipynb notebook to train an arduino deployable model (This is
     * If you also trained up your Model with different words, you need to locate the source code name "micro_features_micro_model_settings.cpp" to change your commands appropiately 
 4. Wire up the Bread Board with the Led Lights
   ### PIN MODES
-    * Pin 4 for Light
-    * Pin 5 for Fan
-    * Pin 6 for Heater
+    * Digital Pin 4 for Light
+    * Digital Pin 5 for Fan
+    * Digital Pin 6 for Heater
  4. Upload skecthes to Arduino Device
  
  ### Testing
